@@ -34,7 +34,6 @@ const ZOMBIE_TYPES = {
 
 const GAME = { CHUNK_SIZE: 1000, FPS: 60, PLAYER_SPEED: 4, PLAYER_MAX_HP: 100 };
 
-// GESTÃO DE SALAS (ROOMS)
 const rooms = {};
 
 function createInitialState() {
@@ -339,9 +338,10 @@ wss.on('connection', (ws) => {
     });
 });
 
-
+let serverTick = 0;
 setInterval(() => {
     const now = Date.now();
+    serverTick++;
     
     for (const roomId in rooms) {
         const state = rooms[roomId];
@@ -498,12 +498,14 @@ setInterval(() => {
             if (destroyed || b.life <= 0) delete state.bullets[bid];
         }
 
-        // Transmitir apenas para os jogadores daquela sala
-        const payload = JSON.stringify({ type: 'gameState', state: state });
-        wss.clients.forEach(client => {
-            if (client.readyState === WebSocket.OPEN && client.roomId === roomId) {
-                client.send(payload);
-            }
-        });
+        // OTIMIZAÇÃO: Só envia os dados a 20 FPS (A cada 3 frames) para eliminar o lag
+        if (serverTick % 3 === 0) {
+            const payload = JSON.stringify({ type: 'gameState', state: state });
+            wss.clients.forEach(client => {
+                if (client.readyState === WebSocket.OPEN && client.roomId === roomId) {
+                    client.send(payload);
+                }
+            });
+        }
     }
 }, 1000 / GAME.FPS);
