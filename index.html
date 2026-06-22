@@ -22,10 +22,13 @@
         #minimap-container { position: absolute; top: 10px; right: 10px; width: 150px; height: 150px; border: 2px solid #555; border-radius: 50%; overflow: hidden; background: rgba(0,0,0,0.8); display: none; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
         #minimap-canvas { width: 100%; height: 100%; }
 
+        /* MAPA COMPLETO ('M') */
         #fullmap-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 90; pointer-events: auto; }
-        #fullmap-canvas { border: 4px solid #444; border-radius: 10px; background: #111; max-width: 80vw; max-height: 80vh; }
+        #fullmap-canvas { border: 4px solid #444; border-radius: 10px; background: #111; max-width: 80vw; max-height: 80vh; cursor: grab; }
         .map-legend { position: absolute; bottom: 20px; color: white; font-size: 14px; text-shadow: 1px 1px 0 #000; }
+        .map-hint { position: absolute; top: 20px; color: #ffcc00; font-size: 16px; font-weight: bold; text-shadow: 1px 1px 0 #000; }
 
+        /* STATUS SURVIVAL BARS */
         #survival-hud { position: absolute; left: 10px; bottom: 20px; display: flex; flex-direction: column; gap: 8px; width: 200px; display: none; }
         .stat-container { background: #222; border: 2px solid #000; height: 18px; border-radius: 4px; position: relative; }
         .stat-bar { height: 100%; width: 100%; transition: width 0.2s; }
@@ -34,6 +37,7 @@
         #sleep-bar { background: #9933ff; }
         .stat-label { position: absolute; width: 100%; text-align: center; color: white; font-size: 11px; font-weight: bold; line-height: 18px; text-shadow: 1px 1px 0 #000; }
 
+        /* HOTBAR INFERIOR COM ÍCONES */
         #hotbar-container { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; display: none; pointer-events: auto; }
         .hotbar-slot { position: relative; background: rgba(0, 0, 0, 0.8); border: 2px solid #555; border-radius: 8px; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 30px; transition: 0.2s; }
         .hotbar-active { border-color: #ffcc00; box-shadow: 0 0 15px rgba(255, 204, 0, 0.5); background: rgba(80, 80, 0, 0.8); }
@@ -61,11 +65,19 @@
         .inv-slot:hover { background: #444; transform: scale(1.05); }
         .inv-active { border-color: #ffcc00; box-shadow: 0 0 15px rgba(255, 204, 0, 0.5); background: rgba(80, 80, 0, 0.8); }
 
+        /* CHAT GLOBAL */
+        #chat-container { position: absolute; bottom: 100px; left: 10px; width: 320px; max-height: 250px; display: flex; flex-direction: column; justify-content: flex-end; z-index: 50; pointer-events: auto; display: none; }
+        #chat-messages { overflow-y: auto; color: white; font-size: 14px; text-shadow: 1px 1px 0 #000; margin-bottom: 5px; display: flex; flex-direction: column; gap: 4px; pointer-events: none; }
+        #chat-input { background: rgba(0,0,0,0.8); border: 2px solid #555; color: white; padding: 8px; border-radius: 5px; font-family: sans-serif; display: none; outline: none; }
+        .chat-msg { background: rgba(0,0,0,0.4); padding: 4px 8px; border-radius: 4px; word-wrap: break-word; }
+        .chat-sender { font-weight: bold; color: #00ffcc; }
+
         #build-mode-text { position: absolute; bottom: 140px; left: 50%; transform: translateX(-50%); color: #ffcc00; font-size: 20px; font-weight: bold; text-shadow: 2px 2px 0 #000; display: none; }
 
+        /* LOGIN SCREEN COM MENU AVANÇADO */
         #login-screen, #game-over { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 200; color: white; pointer-events: auto; }
         #login-screen h1 { font-size: 64px; color: #ff3333; text-shadow: 4px 4px 0 #000; margin-bottom: 5px; font-style: italic; }
-        #login-screen input { padding: 15px; font-size: 20px; border-radius: 5px; border: none; text-align: center; margin-bottom: 20px; width: 300px; pointer-events: auto; }
+        .login-input { padding: 15px; font-size: 20px; border-radius: 5px; border: none; text-align: center; margin-bottom: 15px; width: 300px; pointer-events: auto; }
         #login-screen button { padding: 15px 40px; font-size: 24px; background: #44aa00; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.2s; pointer-events: auto; }
         #game-over { display: none; color: red; }
     </style>
@@ -77,11 +89,19 @@
 
     <div id="login-screen">
         <h1>SURVIVAL 3D</h1>
-        <input type="text" id="player-name-input" placeholder="Digite o seu Nome..." maxlength="15" autocomplete="off">
+        <input type="text" id="player-name-input" class="login-input" placeholder="Digite o seu Nome..." maxlength="15" autocomplete="off">
+        
+        <div id="advanced-toggle" style="color: #aaa; text-decoration: underline; cursor: pointer; margin-bottom: 15px; font-size: 14px;">Avançado (Salas Privadas)</div>
+        <div id="advanced-menu" style="display: none; flex-direction: column; align-items: center; margin-bottom: 20px;">
+            <input type="text" id="room-name-input" class="login-input" placeholder="Nome da Sala" maxlength="15" autocomplete="off" style="margin-bottom: 10px; font-size: 16px; padding: 10px; width: 250px;">
+            <input type="password" id="room-pass-input" class="login-input" placeholder="Senha (Opcional)" maxlength="15" autocomplete="off" style="font-size: 16px; padding: 10px; width: 250px; margin-bottom: 0;">
+        </div>
+
         <button id="join-btn">INICIAR JOGO</button>
     </div>
 
     <div id="fullmap-wrapper">
+        <div class="map-hint">Scroll Rato para ZOOM</div>
         <canvas id="fullmap-canvas" width="800" height="800"></canvas>
         <div class="map-legend">🔵 Você | 🔴 Zumbi | 💀 Boss | 🌲 Árvore | 🟡 Itens</div>
     </div>
@@ -115,15 +135,21 @@
                 <b>Mover:</b> W A S D<br>
                 <b>Atirar / Cortar:</b> Botão Esquerdo<br>
                 <b>Mirar (Zoom In):</b> Botão Direito<br>
-                <b>Interagir/Beber/Comer:</b> Tecla E<br>
+                <b>Interagir/Beber:</b> Tecla E<br>
                 <b>Mapa:</b> Tecla M<br>
                 <b>Inventário:</b> Tecla I<br>
-                <b>Trocar Arma (Tiro/Melee):</b> Q / F<br>
+                <b>Chat:</b> ENTER<br>
+                <b>Trocar Arma:</b> Q / F<br>
                 <b>Curar (Ligadura):</b> C
             </div>
         </div>
 
         <div id="minimap-container"><canvas id="minimap-canvas" width="150" height="150"></canvas></div>
+
+        <div id="chat-container">
+            <div id="chat-messages"></div>
+            <input type="text" id="chat-input" placeholder="Escreva e prima ENTER..." maxlength="60" autocomplete="off">
+        </div>
 
         <div id="survival-hud">
             <div class="stat-container"><div id="hunger-bar" class="stat-bar"></div><div class="stat-label">FOME</div></div>
@@ -241,6 +267,7 @@
 
         let gameState = null; let myId = null; let inGame = false;
         let isBuilding = false; let isInventoryOpen = false; let isMapOpen = false;
+        let isChatting = false;
 
         const exploredChunks = new Set();
         const minimapCanvas = document.getElementById('minimap-canvas'); const mCtx = minimapCanvas.getContext('2d');
@@ -248,7 +275,22 @@
 
         ws.onmessage = (event) => { 
             const data = JSON.parse(event.data);
-            if (data.type === 'init') myId = data.id; else gameState = data;
+            if (data.type === 'init') {
+                myId = data.id; 
+            } else if (data.type === 'chat') {
+                const msgs = document.getElementById('chat-messages');
+                const div = document.createElement('div');
+                div.className = 'chat-msg';
+                div.innerHTML = `<span class="chat-sender">${data.sender}:</span> ${data.text}`;
+                msgs.appendChild(div);
+                msgs.scrollTop = msgs.scrollHeight;
+                if (msgs.childNodes.length > 20) msgs.removeChild(msgs.firstChild);
+            } else if (data.type === 'error') {
+                alert(data.message);
+                location.reload();
+            } else if (data.type === 'gameState') {
+                gameState = data.state;
+            }
         };
 
         let scene, camera, renderer, groundPlane, raycaster, mouseVec;
@@ -451,7 +493,7 @@
                 el.innerText = getWeaponEmoji(wpn);
                 el.onclick = () => { 
                     ws.send(JSON.stringify({ type: 'equip', weapon: wpn }));
-                    myPlayer.weapon = wpn; // Local visual prediction
+                    myPlayer.weapon = wpn; 
                     updateInventoryUI();
                 };
                 wList.appendChild(el);
@@ -483,12 +525,21 @@
         function updateMouseVec(e) { mouseVec.x = (e.clientX / window.innerWidth)*2-1; mouseVec.y = -(e.clientY / window.innerHeight)*2+1; }
         function getMouseWorldCoords() { raycaster.setFromCamera(mouseVec, camera); const target = new THREE.Vector3(); raycaster.ray.intersectPlane(groundPlane, target); return { x: target.x, y: target.z }; }
 
+        document.getElementById('advanced-toggle').addEventListener('click', () => {
+            const menu = document.getElementById('advanced-menu');
+            menu.style.display = menu.style.display === 'none' ? 'flex' : 'none';
+        });
+
         document.getElementById('join-btn').addEventListener('click', () => {
             initAudio(); 
             const nameInput = document.getElementById('player-name-input').value.trim() || 'Sobrevivente';
-            ws.send(JSON.stringify({ type: 'setName', name: nameInput }));
+            const roomInput = document.getElementById('room-name-input').value.trim() || 'default';
+            const passInput = document.getElementById('room-pass-input').value.trim() || '';
+
+            ws.send(JSON.stringify({ type: 'join', name: nameInput, room: roomInput, password: passInput }));
             
             document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('chat-container').style.display = 'flex';
             document.getElementById('survival-hud').style.display = 'flex';
             document.getElementById('hotbar-container').style.display = 'flex';
             document.getElementById('top-hud').style.display = 'block';
@@ -503,7 +554,7 @@
         window.addEventListener('contextmenu', e => e.preventDefault());
 
         window.addEventListener('mousedown', (e) => { 
-            if (!inGame || isInventoryOpen || isMapOpen) return;
+            if (!inGame || isInventoryOpen || isMapOpen || isChatting) return;
             if (e.button === 0) {
                 if (isBuilding) {
                     ws.send(JSON.stringify({ type: 'build' })); playFX('build');
@@ -521,7 +572,28 @@
         });
         
         window.addEventListener('keydown', (e) => { 
-            if (!inGame) return; const code = e.code.toLowerCase();
+            if (!inGame) return; 
+            const code = e.code.toLowerCase();
+
+            if (e.code === 'Enter') {
+                const chatInput = document.getElementById('chat-input');
+                if (isChatting) {
+                    const text = chatInput.value.trim();
+                    if (text.length > 0) ws.send(JSON.stringify({ type: 'chat', text: text }));
+                    chatInput.value = '';
+                    chatInput.style.display = 'none';
+                    chatInput.blur();
+                    isChatting = false;
+                } else {
+                    isChatting = true;
+                    chatInput.style.display = 'block';
+                    chatInput.focus();
+                }
+                return;
+            }
+
+            if (isChatting) return; // Bloqueia outros inputs enquanto digita
+
             if (code === 'keyw') keys.w = true; if (code === 'keya') keys.a = true;
             if (code === 'keys') keys.s = true; if (code === 'keyd') keys.d = true;
             
@@ -536,7 +608,6 @@
             }
 
             if (!isInventoryOpen && !isMapOpen) {
-                // TROCA DE ARMAS (Q e F)
                 if (e.code === 'KeyQ') {
                     const primaries = myPlayer.ownedWeapons.filter(w => w !== 'axe');
                     if (primaries.length > 0) {
@@ -547,7 +618,7 @@
                     }
                 }
                 if (e.code === 'KeyF') {
-                    const melees = myPlayer.ownedWeapons.filter(w => w === 'axe'); // Adicionar outras melee se criadas
+                    const melees = myPlayer.ownedWeapons.filter(w => w === 'axe'); 
                     if (melees.length > 0) {
                         let idx = melees.indexOf(myPlayer.weapon);
                         let nextWpn = melees[(idx + 1) % melees.length];
@@ -568,12 +639,23 @@
             if (code === 'keys') keys.s = false; if (code === 'keyd') keys.d = false;
         });
 
+        let fullMapZoom = 0.08;
+        window.addEventListener('wheel', (e) => {
+            if (isMapOpen) {
+                fullMapZoom -= e.deltaY * 0.0002;
+                if (fullMapZoom < 0.02) fullMapZoom = 0.02;
+                if (fullMapZoom > 0.3) fullMapZoom = 0.3;
+            } else {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
         let clientLastShot = 0; let clientLastMelee = 0;
         const WEAPON_COOLDOWNS = { axe: 500, pistol: 400, smg: 100, rifle: 900, sniper: 1500 };
         const clientStates = {};
 
         setInterval(() => {
-            if (!inGame || !myPlayer || myPlayer.isDead || isInventoryOpen || isMapOpen) return;
+            if (!inGame || !myPlayer || myPlayer.isDead || isInventoryOpen || isMapOpen || isChatting) return;
             const now = Date.now();
             const mousePos = getMouseWorldCoords();
             const angle = Math.atan2(mousePos.y - myPlayer.y, mousePos.x - myPlayer.x);
@@ -646,7 +728,7 @@
             };
 
             drawMapToCtx(mCtx, 0.04, true);
-            if(isMapOpen) drawMapToCtx(fCtx, 0.08, false);
+            if(isMapOpen) drawMapToCtx(fCtx, fullMapZoom, false);
         }
 
         function animateLoop() {
